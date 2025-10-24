@@ -20,7 +20,7 @@ namespace DOM
         public string UsuarioCreacion { get; set; } = string.Empty;
         public DateTime FechaCreacion { get; set; }
         public string UsuarioModificador { get; set; } = string.Empty;
-        public DateTime FechaModificacion { get; set; }
+        public DateTime? FechaModificacion { get; set; }
 
         public Usuario()
         {
