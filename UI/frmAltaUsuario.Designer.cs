@@ -38,6 +38,10 @@
             lblClave = new Label();
             cmbRol = new ComboBox();
             btnGuardar = new Button();
+            txtID = new TextBox();
+            lblID = new Label();
+            chkEstado = new CheckBox();
+            btnEliminar = new Button();
             SuspendLayout();
             // 
             // txtNombre
@@ -65,6 +69,7 @@
             // 
             txtClave.Location = new Point(250, 38);
             txtClave.Name = "txtClave";
+            txtClave.PasswordChar = '*';
             txtClave.Size = new Size(126, 23);
             txtClave.TabIndex = 3;
             // 
@@ -122,11 +127,53 @@
             btnGuardar.UseVisualStyleBackColor = true;
             btnGuardar.Click += btnGuardar_Click;
             // 
+            // txtID
+            // 
+            txtID.Location = new Point(12, 198);
+            txtID.Name = "txtID";
+            txtID.ReadOnly = true;
+            txtID.Size = new Size(100, 23);
+            txtID.TabIndex = 10;
+            // 
+            // lblID
+            // 
+            lblID.AutoSize = true;
+            lblID.Location = new Point(12, 180);
+            lblID.Name = "lblID";
+            lblID.Size = new Size(18, 15);
+            lblID.TabIndex = 11;
+            lblID.Text = "ID";
+            // 
+            // chkEstado
+            // 
+            chkEstado.AutoSize = true;
+            chkEstado.Location = new Point(250, 111);
+            chkEstado.Name = "chkEstado";
+            chkEstado.Size = new Size(60, 19);
+            chkEstado.TabIndex = 12;
+            chkEstado.Text = "Activo";
+            chkEstado.UseVisualStyleBackColor = true;
+            // 
+            // btnEliminar
+            // 
+            btnEliminar.Location = new Point(250, 180);
+            btnEliminar.Name = "btnEliminar";
+            btnEliminar.Size = new Size(126, 23);
+            btnEliminar.TabIndex = 13;
+            btnEliminar.Text = "Eliminar";
+            btnEliminar.UseVisualStyleBackColor = true;
+            btnEliminar.Visible = false;
+            btnEliminar.Click += btnEliminar_Click;
+            // 
             // frmAltaUsuario
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnEliminar);
+            Controls.Add(chkEstado);
+            Controls.Add(lblID);
+            Controls.Add(txtID);
             Controls.Add(btnGuardar);
             Controls.Add(cmbRol);
             Controls.Add(lblClave);
@@ -139,6 +186,7 @@
             Controls.Add(txtNombre);
             Name = "frmAltaUsuario";
             Text = "frmAltaUsuario";
+            Load += frmAltaUsuario_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -155,5 +203,9 @@
         private Label lblClave;
         private ComboBox cmbRol;
         private Button btnGuardar;
+        private TextBox txtID;
+        private Label lblID;
+        private CheckBox chkEstado;
+        private Button btnEliminar;
     }
 }

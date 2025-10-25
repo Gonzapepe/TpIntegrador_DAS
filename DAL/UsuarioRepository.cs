@@ -86,8 +86,9 @@ namespace DAL
         public async Task<IEnumerable<Usuario>> GetAllAsync()
         {
             const string query = @"
-                SELECT ID, Nombre, Apellido, Email, Clave, Estado, Rol, FechaCreacion, UsuarioCreacion, FechaModificacion, UsuarioModificador 
-                FROM Usuario";
+                SELECT ID, Nombre, Apellido, Email, Estado
+                FROM Usuario
+                ORDER BY ID";
 
             var usuarios = new List<Usuario>();
 
@@ -101,7 +102,14 @@ namespace DAL
 
                 while (await reader.ReadAsync())
                 {
-                    usuarios.Add(MapFromReader(reader));
+                    usuarios.Add(new Usuario
+                    {
+                        ID = reader.GetInt32("ID"),
+                        Apellido = reader.IsDBNull("Apellido") ? null : reader.GetString("Apellido"),
+                        Nombre = reader.IsDBNull("Nombre") ? null : reader.GetString("Nombre"),
+                        Estado = reader.GetInt32("Estado")
+                    });
+
                 }
             }
             catch (Exception ex)
