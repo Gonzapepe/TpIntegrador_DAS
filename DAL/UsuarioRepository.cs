@@ -34,8 +34,8 @@ namespace DAL
                 command.Parameters.AddWithValue("@Nombre", usuario.Nombre ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Apellido", usuario.Apellido ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Email", usuario.Email ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@Clave", usuario.Apellido ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@Estado", usuario.Apellido);
+                command.Parameters.AddWithValue("@Clave", usuario.Clave ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@Estado", usuario.Estado);
                 command.Parameters.AddWithValue("@Rol", usuario.Rol);
                 command.Parameters.AddWithValue("@FechaCreacion", DateTime.Now);
                 command.Parameters.AddWithValue("@UsuarioCreacion", Environment.UserName);
@@ -51,7 +51,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al dar de alta el usuario", ex);
+                throw new Exception($"Error al dar de alta el usuario: {ex.Message}", ex);
             }
         }
 
@@ -79,7 +79,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener el usuario por ID", ex);
+                throw new Exception($"Error al obtener el usuario por ID: {ex.Message}", ex);
             }
         }
 
@@ -107,6 +107,7 @@ namespace DAL
                         ID = reader.GetInt32("ID"),
                         Apellido = reader.IsDBNull("Apellido") ? null : reader.GetString("Apellido"),
                         Nombre = reader.IsDBNull("Nombre") ? null : reader.GetString("Nombre"),
+                        Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
                         Estado = reader.GetInt32("Estado")
                     });
 
@@ -114,7 +115,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener la lista de usuarios", ex);
+                throw new Exception($"Error al obtener la lista de usuarios: {ex.Message}", ex);
             }
 
             return usuarios;
@@ -131,7 +132,7 @@ namespace DAL
                     Estado = @Estado,
                     Rol = @Rol,
                     FechaModificacion = @FechaModificacion,
-                    UsuarioModificador = @UsuarioModificador,
+                    UsuarioModificador = @UsuarioModificador
                 WHERE ID = @ID
                 ";
 
@@ -155,7 +156,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar el usuario", ex);
+                throw new Exception($"Error al actualizar el usuario: {ex.Message}", ex);
             }
         }
 
@@ -176,7 +177,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                throw new Exception("Hubo un error al dar de baja el usuario", ex);
+                throw new Exception($"Hubo un error al dar de baja el usuario: {ex.Message}", ex);
             }
         }
 
@@ -191,13 +192,13 @@ namespace DAL
                 command.Parameters.AddWithValue("@ID", id);
 
                 await connection.OpenAsync();
-                object result = command.ExecuteScalarAsync();
+                object result = await command.ExecuteScalarAsync();
                 return Convert.ToInt32(result) > 0;
 
             } 
             catch (Exception ex)
             {
-                throw new Exception("Hubo un error al verificar si el usuario existe", ex);
+                throw new Exception($"Hubo un error al verificar si el usuario existe: {ex.Message}", ex);
             }
         }
 
@@ -212,12 +213,12 @@ namespace DAL
                 command.Parameters.AddWithValue("@Email", email);
 
                 await connection.OpenAsync();
-                object result = command.ExecuteScalarAsync();
+                object result = await command.ExecuteScalarAsync();
                 return Convert.ToInt32(result) > 0;
             }
             catch(Exception ex)
             {
-                throw new Exception("Error al verificar si el email ya existe", ex);
+                throw new Exception($"Error al verificar si el email ya existe: {ex.Message}", ex);
             }
         }
 
@@ -232,8 +233,8 @@ namespace DAL
                 Clave = reader.IsDBNull("Clave") ? null : reader.GetString("Clave"),
                 Estado = reader.GetInt32("Estado"),
                 Rol = reader.GetInt32("Rol"),
-                FechaCreacion = reader.GetDateTime("FechaAlta"),
-                UsuarioCreacion = reader.IsDBNull("UsuarioAlta") ? null : reader.GetString("UsuarioAlta"),
+                FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                UsuarioCreacion = reader.IsDBNull("UsuarioCreacion") ? null : reader.GetString("UsuarioCreacion"),
                 FechaModificacion = reader.IsDBNull("FechaModificacion") ? null : reader.GetDateTime("FechaModificacion"),
                 UsuarioModificador = reader.IsDBNull("UsuarioModificador") ? null : reader.GetString("UsuarioModificador")
 

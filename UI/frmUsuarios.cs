@@ -22,7 +22,7 @@ namespace UI
         {
             InitializeComponent();
 
-            string connectionString = "Server=.;Database=PeluqueriaDB;Trusted_Connection=true;";
+            string connectionString = "Server=.\\SQLEXPRESS;Database=PeluqueriaDB;Trusted_Connection=true;TrustServerCertificate=True;";
             IUsuarioRepository repo = new UsuarioRepository(connectionString);
             _servicio = new UsuarioServicio(repo);
         }
