@@ -14,7 +14,7 @@ namespace DOM
         public string Email { get; set; }
         public string Clave { get; set; }
         public int Estado { get; set; } // 0: activo, 1: inactivo
-        public int Rol { get; set; } // valor numérico (0-9) - asignado por el sistema
+        public Rol Rol { get; set; } // valor numérico (0-9) - asignado por el sistema
 
         // Campos para auditoría (quién y cuándo se creó/modificó)
         public string UsuarioCreacion { get; set; } = string.Empty;
@@ -27,7 +27,7 @@ namespace DOM
 
         }
 
-        public Usuario(int id, string nombre, string apellido, string email, string clave, int estado, int rol, string usuarioCreacion, DateTime fechaCreacion, string usuarioModificador, DateTime fechaModificacion)
+        public Usuario(int id, string nombre, string apellido, string email, string clave, int estado, Rol rol, string usuarioCreacion, DateTime fechaCreacion, string usuarioModificador, DateTime fechaModificacion)
          {
              ID = id;
              Nombre = nombre;

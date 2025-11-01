@@ -18,13 +18,16 @@ namespace UI
     public partial class frmUsuarios : Form
     {
         private readonly UsuarioServicio _servicio;
+        private readonly RolServicio _rolServicio;
         public frmUsuarios()
         {
             InitializeComponent();
 
             string connectionString = "Server=.\\SQLEXPRESS;Database=PeluqueriaDB;Trusted_Connection=true;TrustServerCertificate=True;";
             IUsuarioRepository repo = new UsuarioRepository(connectionString);
+            IRolRepository rolRepo = new RolRepository(connectionString);
             _servicio = new UsuarioServicio(repo);
+            _rolServicio = new RolServicio(rolRepo);
         }
 
         private async void frmUsuarios_Load(object sender, EventArgs e)
@@ -38,6 +41,66 @@ namespace UI
             {
                 IEnumerable<Usuario> usuarios = await _servicio.ObtenerTodosAsync();
 
+                dgvUsuarios.AutoGenerateColumns = false;
+                dgvUsuarios.Columns.Clear();
+
+                // Definimos las columnas manualmente
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "ID",
+                    HeaderText = "ID",
+                    Name = "ID"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Nombre",
+                    HeaderText = "Nombre",
+                    Name = "Nombre"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Apellido",
+                    HeaderText = "Apellido",
+                    Name = "Apellido"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Email",
+                    HeaderText = "Email",
+                    Name = "Email"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Estado",
+                    HeaderText = "Estado",
+                    Name = "Estado"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Rol",
+                    HeaderText = "Rol",
+                    Name = "Rol"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "UsuarioCreacion",
+                    HeaderText = "Usuario Creación",
+                    Name = "UsuarioCreacion"
+                });
+
+                dgvUsuarios.Columns.Add(new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "FechaCreacion",
+                    HeaderText = "Fecha Creación",
+                    Name = "FechaCreacion"
+                });
+
                 dgvUsuarios.DataSource = usuarios.ToList();
             }
             catch (Exception ex)
@@ -48,7 +111,7 @@ namespace UI
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
-            frmAltaUsuario f = new frmAltaUsuario(_servicio, modoEdicion: false, usuarioAEliminar: null);
+            frmAltaUsuario f = new frmAltaUsuario(_servicio, _rolServicio, modoEdicion: false, usuarioAEliminar: null);
             f.MdiParent = this.MdiParent;
             f.FormClosed += (s, args) => CargarUsuariosAsync(); // Recargar lista al cerrar el formulario de alta
             f.Show();
@@ -67,7 +130,7 @@ namespace UI
             {
                 var usuarioSeleccionado = (Usuario)dgvUsuarios.Rows[e.RowIndex].DataBoundItem;
 
-                frmAltaUsuario f = new frmAltaUsuario(_servicio, modoEdicion: true, usuarioAEliminar: usuarioSeleccionado);
+                frmAltaUsuario f = new frmAltaUsuario(_servicio, _rolServicio, modoEdicion: true, usuarioAEliminar: usuarioSeleccionado);
                 f.MdiParent = this.MdiParent;
                 f.FormClosed += (s, args) => CargarUsuariosAsync();
                 f.Show();

@@ -15,15 +15,17 @@ namespace UI
     public partial class frmAltaUsuario : Form
     {
         private readonly UsuarioServicio _servicio;
+        private readonly RolServicio _rolServicio;
         private readonly bool _modoEdicion;
         private Usuario _usuarioEnEdicion;
-        public frmAltaUsuario(UsuarioServicio servicio, bool modoEdicion, Usuario usuarioAEliminar)
+        public frmAltaUsuario(UsuarioServicio servicio, RolServicio rolServicio, bool modoEdicion, Usuario usuarioAEliminar)
         {
             InitializeComponent();
 
             string connectionString = "Server=.;Database=PeluqueriaDB;Trusted_Connection=true;";
             var repo = new DAL.UsuarioRepository(connectionString);
             _servicio = servicio;
+            _rolServicio = rolServicio;
             _modoEdicion = modoEdicion;
             _usuarioEnEdicion = usuarioAEliminar;
 
@@ -51,7 +53,7 @@ namespace UI
             txtEmail.Text = usuario.Email;
             // NO cargamos la clave por seguridad
             chkEstado.Checked = (usuario.Estado == 0); // 0 = Activo (checkbox marcado), 1 = Inactivo (checkbox desmarcado)
-            cmbRol.SelectedItem = usuario.Rol; // Asumiendo que los valores del combo coinciden con los roles en BD
+
         }
 
         // Evento del botón Guardar
@@ -78,7 +80,7 @@ namespace UI
                     // Opcional: Permitir cambiar la clave en modo edición
                     // _usuarioEnEdicion.Clave = EncriptacionServicio.EncriptarSHA256(nuevaClaveTextBox.Text);
                     _usuarioEnEdicion.Estado = chkEstado.Checked ? 0 : 1; // 0 = Activo, 1 = Inactivo
-                    _usuarioEnEdicion.Rol = (int)cmbRol.SelectedItem;
+                    _usuarioEnEdicion.Rol = (Rol)cmbRol.SelectedItem;
 
                     // Llamar al servicio para actualizar en la base de datos
                     bool exito = await _servicio.ModificarUsuarioAsync(_usuarioEnEdicion);
@@ -110,7 +112,7 @@ namespace UI
                         txtApellido.Text,
                         txtEmail.Text,
                         txtClave.Text, // Asumiendo que txtClave es visible y obligatorio en modo alta
-                        (int)cmbRol.SelectedItem
+                        (Rol)cmbRol.SelectedItem
                     );
 
                     if (exito)
@@ -175,17 +177,28 @@ namespace UI
         }
 
 
-        private void frmAltaUsuario_Load(object sender, EventArgs e)
+        private async void frmAltaUsuario_Load(object sender, EventArgs e)
         {
-            // Cargar los valores posibles para el rol (0 a 9)
-            for (int i = 0; i <= 9; i++)
-            {
-                cmbRol.Items.Add(i);
-            }
+            await CargarRolesAsync();
+        }
 
-            if (cmbRol.Items.Count > 0)
+        private async Task CargarRolesAsync()
+        {
+            try
             {
-                cmbRol.SelectedIndex = 0;
+                var roles = await _rolServicio.GetAllAsync();
+                cmbRol.DataSource = roles.ToList();
+                cmbRol.DisplayMember = "Detalle";
+                cmbRol.ValueMember = "ID";
+
+                if (_modoEdicion && _usuarioEnEdicion != null)
+                {
+                    cmbRol.SelectedValue = _usuarioEnEdicion.Rol.ID;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar roles: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

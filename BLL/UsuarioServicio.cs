@@ -19,7 +19,7 @@ namespace BLL
             _repo = repo;
         }
 
-        public async Task<bool> AltaUsuarioAsync(string nombre, string apellido, string email, string clave, int rol)
+        public async Task<bool> AltaUsuarioAsync(string nombre, string apellido, string email, string clave, Rol rol)
         {
             // Validaciones
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))

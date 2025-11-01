@@ -58,8 +58,10 @@ namespace DAL
         public async Task<Usuario?> GetByIdAsync(int id)
         {
             const string query = @"
-                SELECT ID, Nombre, Apellido, Email, Clave, Estado, Rol, FechaCreacion, UsuarioCreacion,  UsuarioModificador, FechaModificacion
-                FROM Usuario WHERE ID = @ID";
+                SELECT u.ID, u.Nombre, u.Apellido, u.Email, u.Clave, u.Estado, u.FechaCreacion, u.UsuarioCreacion, u.UsuarioModificador, u.FechaModificacion, r.ID as RolID, r.Detalle as RolDetalle
+                FROM Usuario u
+                LEFT JOIN Rol r ON u.Rol = r.ID
+                WHERE u.ID = @ID";
 
             try
             {
@@ -86,9 +88,10 @@ namespace DAL
         public async Task<IEnumerable<Usuario>> GetAllAsync()
         {
             const string query = @"
-                SELECT ID, Nombre, Apellido, Email, Estado
-                FROM Usuario
-                ORDER BY ID";
+                SELECT u.ID, u.Nombre, u.Apellido, u.Email, u.Estado, u.FechaCreacion, u.UsuarioCreacion, u.FechaModificacion, u.UsuarioModificador, r.ID as RolID, r.Detalle as RolDetalle
+                FROM Usuario u
+                LEFT JOIN Rol r ON u.Rol = r.ID
+                ORDER BY u.ID";
 
             var usuarios = new List<Usuario>();
 
@@ -102,15 +105,7 @@ namespace DAL
 
                 while (await reader.ReadAsync())
                 {
-                    usuarios.Add(new Usuario
-                    {
-                        ID = reader.GetInt32("ID"),
-                        Apellido = reader.IsDBNull("Apellido") ? null : reader.GetString("Apellido"),
-                        Nombre = reader.IsDBNull("Nombre") ? null : reader.GetString("Nombre"),
-                        Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
-                        Estado = reader.GetInt32("Estado")
-                    });
-
+                    usuarios.Add(MapFromReader(reader));
                 }
             }
             catch (Exception ex)
@@ -232,10 +227,14 @@ namespace DAL
                 Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
                 Clave = reader.IsDBNull("Clave") ? null : reader.GetString("Clave"),
                 Estado = reader.GetInt32("Estado"),
-                Rol = reader.GetInt32("Rol"),
+                Rol = new Rol
+                {
+                    ID = reader.GetInt32(reader.GetOrdinal("RolID")),
+                    Detalle = reader.GetString(reader.GetOrdinal("RolDetalle"))
+                },
                 FechaCreacion = reader.GetDateTime("FechaCreacion"),
                 UsuarioCreacion = reader.IsDBNull("UsuarioCreacion") ? null : reader.GetString("UsuarioCreacion"),
-                FechaModificacion = reader.IsDBNull("FechaModificacion") ? null : reader.GetDateTime("FechaModificacion"),
+                FechaModificacion = reader.IsDBNull("FechaModificacion") ? null : (DateTime?)reader.GetDateTime("FechaModificacion"),
                 UsuarioModificador = reader.IsDBNull("UsuarioModificador") ? null : reader.GetString("UsuarioModificador")
 
             };
