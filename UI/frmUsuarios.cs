@@ -124,13 +124,15 @@ namespace UI
             this.Close();
         }
 
-        private void dgvUsuarios_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private async void dgvUsuarios_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
                 var usuarioSeleccionado = (Usuario)dgvUsuarios.Rows[e.RowIndex].DataBoundItem;
 
-                frmAltaUsuario f = new frmAltaUsuario(_servicio, _rolServicio, modoEdicion: true, usuarioAEliminar: usuarioSeleccionado);
+                var usuarioCompleto = await _servicio.GetByIdAsync(usuarioSeleccionado.ID);
+
+                frmAltaUsuario f = new frmAltaUsuario(_servicio, _rolServicio, modoEdicion: true, usuarioAEliminar: usuarioCompleto);
                 f.MdiParent = this.MdiParent;
                 f.FormClosed += (s, args) => CargarUsuariosAsync();
                 f.Show();

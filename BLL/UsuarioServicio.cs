@@ -99,5 +99,10 @@ namespace BLL
         {
             return await _repo.GetAllAsync();
         }
+
+        public async Task<Usuario> GetByIdAsync(int id)
+        {
+            return await _repo.GetByIdAsync(id);
+        }
     }
 }

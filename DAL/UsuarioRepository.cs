@@ -36,7 +36,7 @@ namespace DAL
                 command.Parameters.AddWithValue("@Email", usuario.Email ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Clave", usuario.Clave ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Estado", usuario.Estado);
-                command.Parameters.AddWithValue("@Rol", usuario.Rol);
+                command.Parameters.AddWithValue("@Rol", usuario.Rol.ID);
                 command.Parameters.AddWithValue("@FechaCreacion", DateTime.Now);
                 command.Parameters.AddWithValue("@UsuarioCreacion", Environment.UserName);
                 command.Parameters.AddWithValue("@FechaModificacion", (object)DBNull.Value); // Es NULL en alta
@@ -105,7 +105,23 @@ namespace DAL
 
                 while (await reader.ReadAsync())
                 {
-                    usuarios.Add(MapFromReader(reader));
+                    usuarios.Add(new Usuario
+                    {
+                        ID = reader.GetInt32("ID"),
+                        Nombre = reader.IsDBNull("Nombre") ? null : reader.GetString("Nombre"),
+                        Apellido = reader.IsDBNull("Apellido") ? null : reader.GetString("Apellido"),
+                        Email = reader.IsDBNull("Email") ? null : reader.GetString("Email"),
+                        Estado = reader.GetInt32("Estado"),
+                        Rol = new Rol
+                        {
+                            ID = reader.GetInt32(reader.GetOrdinal("RolID")),
+                            Detalle = reader.GetString(reader.GetOrdinal("RolDetalle"))
+                        },
+                        FechaCreacion = reader.GetDateTime("FechaCreacion"),
+                        UsuarioCreacion = reader.IsDBNull("UsuarioCreacion") ? null : reader.GetString("UsuarioCreacion"),
+                        FechaModificacion = reader.IsDBNull("FechaModificacion") ? null : reader.GetDateTime("FechaModificacion"),
+                        UsuarioModificador = reader.IsDBNull("UsuarioModificador") ? null : reader.GetString("UsuarioModificador")
+                    });
                 }
             }
             catch (Exception ex)
@@ -141,7 +157,7 @@ namespace DAL
                 command.Parameters.AddWithValue("@Email", usuario.Email ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Clave", usuario.Clave ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Estado", usuario.Estado);
-                command.Parameters.AddWithValue("@Rol", usuario.Rol);
+                command.Parameters.AddWithValue("@Rol", usuario.Rol.ID);
                 command.Parameters.AddWithValue("@FechaModificacion", DateTime.Now);
                 command.Parameters.AddWithValue("@UsuarioModificador", Environment.UserName);
 
